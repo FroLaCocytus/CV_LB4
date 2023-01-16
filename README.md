@@ -24,15 +24,20 @@
 
 <h3>2.1 Распаковка данных</h3>
 Наш датасет лежит на гугл диске. Разархивируем его в блокноте.
+
 ```
 from google.colab import drive
 drive.mount('/content/drive/')
 ```
+
 ```
 !unzip /content/drive/MyDrive/archive.zip 
 ```
+
 <h3>2.2 Преобразование данных для передачи в модель</h3>
+
 Укажем константы, которые будем использовать в дальнейшем для работы с данными.
+
 ```
 DATA_PATH = './data/' # путь к нашему датасету
 TRAIN_SIZE = 0.9 # размер обучающей выборки
@@ -46,6 +51,7 @@ val_marks = all_marks[test_start:] # валидационная выбока
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 ```
+
 Создадим класс для выборок, используя `Dataset` из библиотеки `PyTorch`.
 
 ```
@@ -66,9 +72,10 @@ class DetectionDataset(Dataset):
         
         box_coords = item['nums'] # инфа о элемнте
 ...
-
 ```
+
 Создадим наши выборки
+
 ```
 # трансормация в тензор
 my_transforms = transforms.Compose([
@@ -89,7 +96,9 @@ val_dataset = DetectionDataset(
     transforms=my_transforms
 )
 ```
+
 Последний этап подготовки данных – это разбиение на пакеты.
+
 ```
 # функция создания пакета
 def collate_fn(batch):
@@ -111,6 +120,7 @@ val_loader = DataLoader(
     collate_fn=collate_fn, 
 )
 ```
+
 В итоге получаем две выборки – тренировочную и валидационную.
 
 <h2>3. Модель детекции/сегментации</h2>
@@ -184,6 +194,7 @@ def get_detector_model():
     
     return model
 ```
+
 Получившаяся модель позволяет производить детекцию и сегментацию на изображении.
 
 <h3>3.2 Обучение модели</h3>
@@ -243,6 +254,7 @@ def visualize_prediction_plate(file, model, device='cuda', verbose=True, thresh=
     prediction = predictions[0] # предсказания модели
 ...
 ```
+
 Следующая важная функция – `simplify_contour`. Она "упрощает" контур нашей маски и находит угловые точки. В дальнийшем это позволит нам сменить ракурс у картинки.
 
 ```
@@ -267,6 +279,7 @@ def simplify_contour(contour, n_corners=4):
         else:
             return approx
 ```
+
 Функция `four_point_transform` делает трансформацию по 4 точкам. Другими словами у нас есть углы от маски и углы от прямоугольной рамки, мы трансформируем углы от маски "натгивая" их на углы от рамки. В некоторых случаях это позволяет улучшить видимость букв и цифр на номере машины.
 
 ```
