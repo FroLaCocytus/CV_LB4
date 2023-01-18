@@ -1,4 +1,5 @@
 Ссылка на веса модели: https://drive.google.com/file/d/1fbVtnSlD31UzcpiuzCUjMLBL4v8M_x0j/view?usp=share_link
+
 Ссылка на датасет: https://www.kaggle.com/datasets/slayzar/ocr-dataset
 
 <h1 align="center">Лабораторная работа №4</h1>
